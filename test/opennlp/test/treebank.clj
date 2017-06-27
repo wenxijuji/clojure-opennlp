@@ -17,7 +17,8 @@
            {:phrase ["the" "accelerator"] :tag "NP"}
            {:phrase ["when"] :tag "ADVP"}
            {:phrase ["the" "brake" "pedal"] :tag "NP"}
-           {:phrase ["is" "pressed"] :tag "VP"}))))
+           {:phrase ["is" "pressed"] :tag "VP"}
+           {:phrase ["."], :tag nil}))))
 
 (deftest no-model-file-test
   (is (thrown? FileNotFoundException (make-treebank-chunker "nonexistantfile")))

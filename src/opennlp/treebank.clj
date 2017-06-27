@@ -25,10 +25,10 @@
   (let [seqnum    (atom 0)
         splitfunc (fn
                     [^String item]
-                    (if (.startsWith item "B-")
+                    (if (or (.startsWith item "B-") (.startsWith item "O"))
                       (swap! seqnum inc)
                       @seqnum))]
-    (partition-by splitfunc (pop chunks))))
+    (partition-by splitfunc chunks)))
 
 
 (defn- size-chunk
@@ -57,6 +57,30 @@
 
 
 (defstruct treebank-phrase :phrase :tag)
+
+(defmulti make-loose-chunker
+  "Return a function for loose chunking phrases from pos-tagged tokens based on
+  a given model file."
+  class)
+
+(defmethod make-loose-chunker :default
+  [modelfile]
+  (with-open [modelstream (input-stream modelfile)]
+    (make-loose-chunker (ChunkerModel. modelstream))))
+
+(defmethod make-loose-chunker ChunkerModel
+  [^ChunkerModel model]
+  (fn treebank-chunker
+    [pos-tagged-tokens]
+    (let [chunker (ChunkerME. model)
+          [tokens tags] (de-interleave pos-tagged-tokens)
+          chunks  (into [] (seq (.chunk chunker 
+                                  (into-array ^List tokens) 
+                                  (into-array ^List tags))))
+          probs (seq (.probs chunker))]
+      (with-meta
+        (map vector tokens chunks)
+        {:probabilities probs}))))
 
 (defmulti make-treebank-chunker
   "Return a function for chunking phrases from pos-tagged tokens based on
