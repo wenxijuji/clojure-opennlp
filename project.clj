@@ -1,4 +1,4 @@
-(defproject wenxijuji/clojure-opennlp "0.4.1-SNAPSHOT"
+(defproject juji/clojure-opennlp "0.4.1-SNAPSHOT"
   :description "Natural Language Processing with Clojure, library for opennlp."
   :url "https://github.com/wenxijuji/clojure-opennlp"
   :min-lein-version "2.0.0"
